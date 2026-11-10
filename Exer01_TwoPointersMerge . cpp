@@ -1,0 +1,62 @@
+#include <iostream>
+#include <vector>
+
+class Solution {
+public:
+    std::vector<int> mergeSortedArrays(const std::vector<int>& A, const std::vector<int>& B) {
+        int n = A.size();
+        int m = B.size();
+        
+        std::vector<int> result;
+        result.reserve(n + m); 
+
+        int i = 0; 
+        int j = 0;
+        while (i < n && j < m) {
+            if (A[i] <= B[j]) {
+                result.push_back(A[i]);
+                i++;
+            } else {
+                result.push_back(B[j]);
+                j++;
+            }
+        }
+        while (i < n) {
+            result.push_back(A[i]);
+            i++;
+        }
+        while (j < m) {
+            result.push_back(B[j]);
+            j++;
+        }
+
+        return result;
+    }
+};
+
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(NULL);
+
+    int n, m;
+    if (!(std::cin >> n >> m)) return 0;
+
+    std::vector<int> A(n);
+    for (int i = 0; i < n; ++i) {
+        std::cin >> A[i];
+    }
+
+    std::vector<int> B(m);
+    for (int j = 0; j < m; ++j) {
+        std::cin >> B[j];
+    }
+
+    Solution solution;
+    std::vector<int> merged = solution.mergeSortedArrays(A, B);
+    for (size_t i = 0; i < merged.size(); ++i) {
+        std::cout << merged[i] << (i + 1 == merged.size() ? "" : " ");
+    }
+    std::cout << "\n";
+
+    return 0;
+}
