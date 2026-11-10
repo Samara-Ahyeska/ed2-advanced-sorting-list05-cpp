@@ -1,0 +1,81 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+class Solution {
+private:
+    int initialPivotValue = -1;
+    bool rootCaptured = false;
+    int medianOfThree(std::vector<int>& arr, int low, int high) {
+        int mid = low + (high - low) / 2;
+        if (arr[low] > arr[mid]) std::swap(arr[low], arr[mid]);
+        if (arr[low] > arr[high]) std::swap(arr[low], arr[high]);
+        if (arr[mid] > arr[high]) std::swap(arr[mid], arr[high]);
+        if (!rootCaptured) {
+            initialPivotValue = arr[mid];
+            rootCaptured = true;
+        }
+        std::swap(arr[mid], arr[high]);
+        return arr[high];
+    }
+
+    int partition(std::vector<int>& arr, int low, int high) {
+        int pivot = medianOfThree(arr, low, high);
+        int i = low - 1;
+
+        for (int j = low; j < high; ++j) {
+            if (arr[j] <= pivot) {
+                i++;
+                std::swap(arr[i], arr[j]);
+            }
+        }
+        std::swap(arr[i + 1], arr[high]);
+        return i + 1;
+    }
+
+    void quickSort(std::vector<int>& arr, int low, int high) {
+        if (low < high) {
+            int pi = partition(arr, low, high);
+            quickSort(arr, low, pi - 1);
+            quickSort(arr, pi + 1, high);
+        }
+    }
+
+public:
+    int getInitialPivot(std::vector<int>& arr) {
+        rootCaptured = false;
+        std::vector<int> temp = arr;
+        medianOfThree(temp, 0, temp.size() - 1);
+        return initialPivotValue;
+    }
+
+    void sortArray(std::vector<int>& arr) {
+        if (arr.empty()) return;
+        quickSort(arr, 0, arr.size() - 1);
+    }
+};
+
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(NULL);
+
+    int n;
+    if (!(std::cin >> n)) return 0;
+
+    std::vector<int> nums(n);
+    for (int i = 0; i < n; ++i) {
+        std::cin >> nums[i];
+    }
+
+    Solution solution;
+    std::vector<int> numsForPivot = nums;
+    int rootPivot = solution.getInitialPivot(numsForPivot);
+    std::cout << "Pivo inicial: " << rootPivot << "\n";
+    solution.sortArray(nums);
+    for (int i = 0; i < n; ++i) {
+        std::cout << nums[i] << (i + 1 == n ? "" : " ");
+    }
+    std::cout << "\n";
+
+    return 0;
+}
