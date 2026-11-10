@@ -1,0 +1,76 @@
+#include <iostream>
+#include <vector>
+
+class Solution {
+private:
+    void merge(std::vector<int>& arr, int ini, int mid, int fim) {
+        int n1 = mid - ini + 1;
+        int n2 = fim - mid;
+
+        std::vector<int> L(n1);
+        std::vector<int> R(n2);
+
+        for (int i = 0; i < n1; i++) L[i] = arr[ini + i];
+        for (int j = 0; j < n2; j++) R[j] = arr[mid + 1 + j];
+
+        int i = 0, j = 0, k = ini;
+        while (i < n1 && j < n2) {
+            if (L[i] <= R[j]) {
+                arr[k++] = L[i++];
+            } else {
+                arr[k++] = R[j++];
+            }
+        }
+
+        while (i < n1) {
+            arr[k++] = L[i++];
+        }
+
+        while (j < n2) {
+            arr[k++] = R[j++];
+        }
+        std::cout << "[Merge " << ini << ".." << fim << "]:";
+        for (int idx = ini; idx <= fim; ++idx) {
+            std::cout << " " << arr[idx];
+        }
+        std::cout << "\n";
+    }
+
+    void mergeSortHelper(std::vector<int>& arr, int ini, int fim) {
+        if (ini < fim) {
+            int mid = ini + (fim - ini) / 2;
+            mergeSortHelper(arr, ini, mid);
+            mergeSortHelper(arr, mid + 1, fim);
+            merge(arr, ini, mid, fim);
+        }
+    }
+
+public:
+    void sortArray(std::vector<int>& nums) {
+        if (nums.empty()) return;
+        mergeSortHelper(nums, 0, nums.size() - 1);
+    }
+};
+
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(NULL);
+
+    int n;
+    if (!(std::cin >> n)) return 0;
+
+    std::vector<int> nums(n);
+    for (int i = 0; i < n; ++i) {
+        std::cin >> nums[i];
+    }
+
+    Solution solution;
+    solution.sortArray(nums);
+    std::cout << "[Final]:";
+    for (int i = 0; i < n; ++i) {
+        std::cout << " " << nums[i];
+    }
+    std::cout << "\n";
+
+    return 0;
+}
