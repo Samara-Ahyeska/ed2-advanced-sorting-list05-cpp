@@ -1,0 +1,107 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+class Solution {
+private:
+      int lomutoPartition(std::vector<int>& arr, int low, int high, long long& swapCount) {
+        int pivot = arr[high];
+        int i = low - 1;
+
+        for (int j = low; j < high; ++j) {
+            if (arr[j] <= pivot) {
+                i++;
+                if (i != j) {
+                    std::swap(arr[i], arr[j]);
+                    swapCount++;
+                }
+            }
+        }
+        if (i + 1 != high) {
+            std::swap(arr[i + 1], arr[high]);
+            swapCount++;
+        }
+        return i + 1;
+    }
+
+    void quickSortLomuto(std::vector<int>& arr, int low, int high, long long& swapCount) {
+        if (low < high) {
+            int pi = lomutoPartition(arr, low, high, swapCount);
+            quickSortLomuto(arr, low, pi - 1, swapCount);
+            quickSortLomuto(arr, pi + 1, high, swapCount);
+        }
+    }
+    int hoarePartition(std::vector<int>& arr, int low, int high, long long& swapCount) {
+        int pivot = arr[low + (high - low) / 2];
+        int i = low - 1;
+        int j = high + 1;
+
+        while (true) {
+            do {
+                i++;
+            } while (arr[i] < pivot);
+
+            do {
+                j--;
+            } while (arr[j] > pivot);
+
+            if (i >= j) {
+                return j;
+            }
+
+            if (i != j) {
+                std::swap(arr[i], arr[j]);
+                swapCount++;
+            }
+        }
+    }
+
+    void quickSortHoare(std::vector<int>& arr, int low, int high, long long& swapCount) {
+        if (low < high) {
+            int pi = hoarePartition(arr, low, high, swapCount);
+            quickSortHoare(arr, low, pi, swapCount);
+            quickSortHoare(arr, pi + 1, high, swapCount);
+        }
+    }
+
+public:
+    void runComparison(std::vector<int> nums) {
+        std::vector<int> numsLomuto = nums;
+        long long lomutoSwaps = 0;
+        quickSortLomuto(numsLomuto, 0, numsLomuto.size() - 1, lomutoSwaps);
+
+        std::vector<int> numsHoare = nums;
+        long long hoareSwaps = 0;
+        quickSortHoare(numsHoare, 0, numsHoare.size() - 1, hoareSwaps);
+
+        std::cout << "Lomuto: " << lomutoSwaps << " trocas\n";
+        std::cout << "Hoare: " << hoareSwaps << " trocas\n";
+
+        std::string winner = (hoareSwaps <= lomutoSwaps) ? "Hoare" : "Lomuto";
+        std::cout << "Menos trocas: " << winner << "\n";
+
+        const std::vector<int>& winningArr = (winner == "Hoare") ? numsHoare : numsLomuto;
+        for (size_t i = 0; i < winningArr.size(); ++i) {
+            std::cout << winningArr[i] << (i + 1 == winningArr.size() ? "" : " ");
+        }
+        std::cout << "\n";
+    }
+};
+
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(NULL);
+
+    int n;
+    if (!(std::cin >> n)) return 0;
+
+    std::vector<int> nums(n);
+    for (int i = 0; i < n; ++i) {
+        std::cin >> nums[i];
+    }
+
+    Solution solution;
+    solution.runComparison(nums);
+
+    return 0;
+}
