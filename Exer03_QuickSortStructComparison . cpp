@@ -1,0 +1,85 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+
+struct Candidate {
+    std::string name;
+    int score;
+};
+
+class Solution {
+private:
+    bool compare(const Candidate& a, const Candidate& b) {
+        if (a.score != b.score) {
+            return a.score > b.score;
+        }
+        return a.name < b.name;
+    }
+
+    int partition(std::vector<Candidate>& arr, int low, int high) {
+        Candidate pivot = arr[high];
+        int i = low - 1;
+
+        for (int j = low; j < high; ++j) {
+            if (compare(arr[j], pivot) || (!(compare(pivot, arr[j])) && arr[j].name == pivot.name && arr[j].score == pivot.score)) {
+                i++;
+                std::swap(arr[i], arr[j]);
+            }
+        }
+        std::swap(arr[i + 1], arr[high]);
+        return i + 1;
+    }
+    int lomutoPartition(std::vector<Candidate>& arr, int low, int high) {
+        Candidate pivot = arr[high];
+        int i = low;
+
+        for (int j = low; j < high; ++j) {
+            if (compare(arr[j], pivot)) {
+                if (i != j) {
+                    std::swap(arr[i], arr[j]);
+                }
+                i++;
+            }
+        }
+        if (i != high) {
+            std::swap(arr[i], arr[high]);
+        }
+        return i;
+    }
+
+    void quickSort(std::vector<Candidate>& arr, int low, int high) {
+        if (low < high) {
+            int pi = lomutoPartition(arr, low, high);
+            quickSort(arr, low, pi - 1);
+            quickSort(arr, pi + 1, high);
+        }
+    }
+
+public:
+    void sortCandidates(std::vector<Candidate>& candidates) {
+        if (candidates.empty()) return;
+        quickSort(candidates, 0, candidates.size() - 1);
+    }
+};
+
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(NULL);
+
+    int n;
+    if (!(std::cin >> n)) return 0;
+
+    std::vector<Candidate> candidates(n);
+    for (int i = 0; i < n; ++i) {
+        std::cin >> candidates[i].name >> candidates[i].score;
+    }
+
+    Solution solution;
+    solution.sortCandidates(candidates);
+    for (int i = 0; i < n; ++i) {
+        std::cout << candidates[i].name << " " << candidates[i].score << "\n";
+    }
+
+    return 0;
+}
